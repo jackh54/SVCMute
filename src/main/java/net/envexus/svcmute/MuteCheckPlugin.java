@@ -16,6 +16,12 @@ import java.util.UUID;
 
 public class MuteCheckPlugin implements VoicechatPlugin {
 
+    /**
+     * Simple Voice Chat calls higher priorities first and stops dispatching once a packet is cancelled.
+     * Running above other listeners (e.g. VoiceSentinel at 100) keeps muted audio from reaching them.
+     */
+    private static final int MICROPHONE_PRIORITY = 1000;
+
     private final Set<UUID> notifiedPlayers;
     private final IntegrationManager integrationManager;
     private final ConfigurationManager configurationManager;
@@ -51,7 +57,7 @@ public class MuteCheckPlugin implements VoicechatPlugin {
      */
     @Override
     public void registerEvents(EventRegistration registration) {
-        registration.registerEvent(MicrophonePacketEvent.class, this::onMicrophone);
+        registration.registerEvent(MicrophonePacketEvent.class, this::onMicrophone, MICROPHONE_PRIORITY);
     }
 
     /**
